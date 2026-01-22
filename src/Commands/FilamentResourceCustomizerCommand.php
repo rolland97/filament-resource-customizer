@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Rolland\FilamentResourceCustomizer\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class FilamentResourceCustomizerCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'filament-resource-customizer';
 
     public $description = 'My command';
 
