@@ -1,9 +1,12 @@
 {
     "name": "rolland97/filament-resource-customizer",
-    "description": "This is my package filament-resource-customizer",
+    "description": "Customize Filament resources with optional Filament Shield permissions scaffolding.",
     "keywords": [
         "Rolland97",
         "laravel",
+        "filament",
+        "permissions",
+        "generator",
         "filament-resource-customizer"
     ],
     "homepage": "https://github.com/rolland97/filament-resource-customizer",
@@ -70,6 +73,6 @@
             }
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
