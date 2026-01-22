@@ -1,0 +1,19 @@
+<?php
+
+namespace {{ namespace }};
+
+use Rolland\FilamentResourceCustomizer\Support\BaseResourcePermissions;
+
+class {{ className }} extends BaseResourcePermissions
+{
+    public static function getResourceName(): string
+    {
+        return '{{ resourceName }}';
+    }
+
+    public static function methods(): array
+    {
+        return [
+        ];
+    }
+}

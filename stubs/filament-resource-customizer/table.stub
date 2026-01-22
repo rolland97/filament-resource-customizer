@@ -1,0 +1,27 @@
+<?php
+
+namespace {{ namespace }};
+
+use Filament\Actions\Action;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Table;
+
+class {{ className }}
+{
+    public static int $filterFormColumns = 2;
+
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns({{ resourceName }}Column::get())
+            ->filters({{ resourceName }}Filter::get(), FiltersLayout::AboveContentCollapsible)
+            ->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Filter'),
+            )
+            ->filtersFormColumns(static::$filterFormColumns)
+            ->recordActions({{ resourceName }}RecordAction::get())
+            ->toolbarActions({{ resourceName }}ToolbarAction::get());
+    }
+}
