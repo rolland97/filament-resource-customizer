@@ -2,6 +2,11 @@
 
 All notable changes to `filament-resource-customizer` will be documented in this file.
 
+## v1.0.1 - 2026-01-22
+
+- drop unused database stubs to keep package lean
+- update phpstan paths to match removed folder
+
 ## v1.0.0 - 2026-01-22
 
 Initial stable release of Filament Resource Customizer.
