@@ -1,0 +1,12 @@
+<?php
+
+namespace {{ namespace }};
+
+class {{ className }}
+{
+    public static function get(): array
+    {
+        return {{ getMethod }};
+    }
+{{ methods }}
+}

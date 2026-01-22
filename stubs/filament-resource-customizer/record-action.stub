@@ -1,0 +1,15 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ uses }}
+
+class {{ className }}
+{
+    public static function get(): array
+    {
+        return [
+            {{ actions }}
+        ];
+    }
+}
