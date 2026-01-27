@@ -4,6 +4,7 @@ namespace Rolland\FilamentResourceCustomizer\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Rolland\FilamentResourceCustomizer\FilamentResourceCustomizer;
 use Rolland\FilamentResourceCustomizer\Services\Generators\CustomizedFileGenerator;
 use Rolland\FilamentResourceCustomizer\Support\ResourceLocator;
 
@@ -11,19 +12,28 @@ use function Laravel\Prompts\text;
 
 class MakePermissionsCommand extends Command
 {
-    protected $signature = 'filament:make-resource-permissions {resource? : The resource class name (e.g., DepartmentResource)} {--force : Overwrite the permissions file if it exists}';
+    protected $signature = 'filament:make-resource-permissions {resource? : The resource class name (e.g., DepartmentResource)} {--panel= : Panel name (e.g., Admin)} {--force : Overwrite the permissions file if it exists}';
 
     protected $description = 'Generate a permissions class for a Filament resource';
 
-    public function handle(ResourceLocator $locator): int
+    public function handle(ResourceLocator $locator, FilamentResourceCustomizer $resourceCustomizer): int
     {
         $resourceName = $this->argument('resource')
             ?? text('Resource class name', placeholder: 'DepartmentResource');
 
-        $resourcePath = $locator->findResourcePath($resourceName);
+        $panel = $this->option('panel');
+
+        if ($panel && ! File::isDirectory($resourceCustomizer->resourcesPathsForPanel($panel)[0])) {
+            $this->error("Panel '{$panel}' not found. Expected resources at: app/Filament/{$panel}/Resources");
+
+            return self::FAILURE;
+        }
+
+        $resourcePath = $locator->findResourcePath($resourceName, $panel);
 
         if (! $resourcePath) {
-            $this->error("Resource '{$resourceName}' not found!");
+            $panelLabel = $panel ? " in panel '{$panel}'" : '';
+            $this->error("Resource '{$resourceName}' not found{$panelLabel}!");
 
             return self::FAILURE;
         }

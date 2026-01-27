@@ -15,8 +15,18 @@ class ShieldResourceConfigBuilder
 
     public function build(string $resourcesPath): array
     {
-        $resourceConfig = $this->buildResourceConfig($resourcesPath);
-        $resources = array_merge($this->staticResources(), $resourceConfig);
+        return $this->buildForPaths([$resourcesPath]);
+    }
+
+    public function buildForPaths(array $resourcesPaths): array
+    {
+        $resources = [];
+
+        foreach ($resourcesPaths as $resourcesPath) {
+            $resources = array_merge($resources, $this->buildResourceConfig($resourcesPath));
+        }
+
+        $resources = array_merge($this->staticResources(), $resources);
 
         ksort($resources);
 

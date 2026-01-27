@@ -2,8 +2,11 @@
 
 // config for Rolland/FilamentResourceCustomizer
 return [
-    'resources_path' => 'app/Filament/Resources',
+    'resources_path' => 'app/Filament/Resources', // string or array of paths
     'stubs_path' => 'stubs/filament-resource-customizer',
+    'panels' => [
+        'auto_detect' => true,
+    ],
     'permissions' => [
         'enabled' => true,
         'placement' => 'resource',

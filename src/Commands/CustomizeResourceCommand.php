@@ -3,6 +3,8 @@
 namespace Rolland\FilamentResourceCustomizer\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Rolland\FilamentResourceCustomizer\FilamentResourceCustomizer;
 use Rolland\FilamentResourceCustomizer\Services\Formatting\CodeFormatter;
 use Rolland\FilamentResourceCustomizer\Services\Generators\CustomizedFileGenerator;
 use Rolland\FilamentResourceCustomizer\Services\Resources\CustomizationStateChecker;
@@ -14,7 +16,7 @@ use function Laravel\Prompts\text;
 
 class CustomizeResourceCommand extends Command
 {
-    protected $signature = 'filament:customize-resource {resource? : The resource class name (e.g., DepartmentResource)} {--force : Overwrite generated files if they exist}';
+    protected $signature = 'filament:customize-resource {resource? : The resource class name (e.g., DepartmentResource)} {--panel= : Panel name (e.g., Admin)} {--force : Overwrite generated files if they exist}';
 
     protected $description = 'Convert a Filament resource to a customized pattern with separate action/filter files';
 
@@ -22,15 +24,25 @@ class CustomizeResourceCommand extends Command
         ResourceLocator $locator,
         ResourceTableLocator $tableLocator,
         CustomizationStateChecker $customizationStateChecker,
-        CodeFormatter $formatter
+        CodeFormatter $formatter,
+        FilamentResourceCustomizer $resourceCustomizer
     ): int {
         $resourceName = $this->argument('resource')
             ?? text('Resource class name', placeholder: 'DepartmentResource');
 
-        $resourcePath = $locator->findResourcePath($resourceName);
+        $panel = $this->option('panel');
+
+        if ($panel && ! File::isDirectory($resourceCustomizer->resourcesPathsForPanel($panel)[0])) {
+            $this->error("Panel '{$panel}' not found. Expected resources at: app/Filament/{$panel}/Resources");
+
+            return self::FAILURE;
+        }
+
+        $resourcePath = $locator->findResourcePath($resourceName, $panel);
 
         if (! $resourcePath) {
-            $this->error("Resource '{$resourceName}' not found!");
+            $panelLabel = $panel ? " in panel '{$panel}'" : '';
+            $this->error("Resource '{$resourceName}' not found{$panelLabel}!");
 
             return self::FAILURE;
         }

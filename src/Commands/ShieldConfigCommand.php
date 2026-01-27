@@ -4,12 +4,13 @@ namespace Rolland\FilamentResourceCustomizer\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Rolland\FilamentResourceCustomizer\FilamentResourceCustomizer;
 use Rolland\FilamentResourceCustomizer\Services\Shield\ShieldResourceConfigBuilder;
 use Rolland\FilamentResourceCustomizer\Support\ShieldConfigUpdater;
 
 class ShieldConfigCommand extends Command
 {
-    protected $signature = 'filament:shield-config {--path= : Custom config path} {--merge : Merge with existing resources instead of replacing} {--no-merge : Do not merge with existing resources}';
+    protected $signature = 'filament:shield-config {--path= : Custom config path} {--panel= : Panel name (e.g., Admin)} {--merge : Merge with existing resources instead of replacing} {--no-merge : Do not merge with existing resources}';
 
     protected $description = 'Generate Filament Shield resources configuration based on resources and permissions classes';
 
@@ -23,15 +24,26 @@ class ShieldConfigCommand extends Command
             return self::FAILURE;
         }
 
-        $resourcesPath = base_path(config('filament-resource-customizer.resources_path', 'app/Filament/Resources'));
+        $panel = $this->option('panel');
+        $resourceCustomizer = app(FilamentResourceCustomizer::class);
+        $resourcesPaths = $panel
+            ? $resourceCustomizer->resourcesPathsForPanel($panel)
+            : $resourceCustomizer->resourcesPaths();
 
-        if (! File::isDirectory($resourcesPath)) {
-            $this->error("Resources directory not found at: {$resourcesPath}");
+        if ($panel && ! File::isDirectory($resourcesPaths[0])) {
+            $this->error("Panel '{$panel}' not found. Expected resources at: app/Filament/{$panel}/Resources");
+
+            return self::FAILURE;
+        }
+        $resourcesPaths = array_values(array_filter($resourcesPaths, fn (string $path) => File::isDirectory($path)));
+
+        if ($resourcesPaths === []) {
+            $this->error('No resources directories found. Check filament-resource-customizer.resources_path or panels.auto_detect.');
 
             return self::FAILURE;
         }
 
-        $resources = $builder->build($resourcesPath);
+        $resources = $builder->buildForPaths($resourcesPaths);
         $updater->updateResources($configPath, $resources, $this->resolveMergeOption());
 
         $this->info('Filament Shield config updated.');
