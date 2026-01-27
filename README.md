@@ -63,6 +63,12 @@ Customize a resource by splitting tables/filters/actions into separate classes:
 php artisan filament:customize-resource DepartmentResource
 ```
 
+Target a specific panel:
+
+```bash
+php artisan filament:customize-resource DepartmentResource --panel=Admin
+```
+
 Generate a permissions class for a resource:
 
 ```bash
@@ -75,6 +81,12 @@ Generate Filament Shield resources configuration:
 php artisan filament:shield-config
 ```
 
+Generate for a specific panel:
+
+```bash
+php artisan filament:shield-config --panel=Admin
+```
+
 Merge with existing resources:
 
 ```bash
@@ -85,6 +97,12 @@ Run all steps (customize, permissions, and Shield config) in one command:
 
 ```bash
 php artisan filament:customize-resource-all DepartmentResource
+```
+
+Run all steps for a specific panel:
+
+```bash
+php artisan filament:customize-resource-all DepartmentResource --panel=Admin
 ```
 
 If `resources`, `resources.manage`, `resources.subject`, or `resources.exclude` are missing, the command will create them.
@@ -102,8 +120,9 @@ If `resources`, `resources.manage`, `resources.subject`, or `resources.exclude` 
 
 Key options in `config/filament-resource-customizer.php`:
 
-- `resources_path`: Where Filament resources live (default: `app/Filament/Resources`)
+- `resources_path`: Where Filament resources live; accepts a string or array (default: `app/Filament/Resources`)
 - `stubs_path`: Custom stub directory (default: `stubs/filament-resource-customizer`)
+- `panels.auto_detect`: Auto-detect Filament panel resource paths under `app/Filament/*/Resources` (default: `true`)
 - `permissions.enabled`: Toggle permissions generation
 - `permissions.placement`: `resource`, `parent`, or `custom`
 - `permissions.custom_path`: Target path if placement is `custom`
@@ -118,6 +137,14 @@ If you use Filament Shield, the `filament:shield-config` command will update `re
 
 - pass `--merge`, or
 - set `shield.merge` to `true` in the config.
+
+### Multi-panel setups
+
+You can use any combination of these:
+
+- `--panel=Admin` to target a single panel for a command.
+- `resources_path` as an array, e.g. `['app/Filament/Resources', 'app/Filament/Admin/Resources']`.
+- `panels.auto_detect=true` to auto-add `app/Filament/*/Resources` alongside the configured paths.
 
 ## Example Structure
 
