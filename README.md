@@ -15,11 +15,14 @@ Customize Filament resources with optional Filament Shield permissions scaffoldi
 
 ## Requirements
 
-- PHP 8.3+ | 8.4+
-- Laravel 12
-- Filament 4 or 5
+- PHP 8.3, 8.4, or 8.5
+- Laravel 11 or 12
+- Filament v4 or v5
 
-This package is recommended alongside Filament Shield for generating `resources.manage` entries, but it also works without Filament Shield. You can disable permission class generation by setting `permissions.enabled` to `false` in the config.
+This package generates and rewrites Filament resource files as source code; it does not load
+Filament at runtime, so no `filament/*` package is a hard dependency. Generated output targets
+APIs common to Filament v4 and v5. Full application-level compatibility across both majors is
+verified manually per release (a CI matrix booting generated resources under each major is planned).
 
 ## Installation
 
