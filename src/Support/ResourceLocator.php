@@ -20,6 +20,8 @@ class ResourceLocator
             ? $this->resourceCustomizer->resourcesPathsForPanel($panel)
             : $this->resourceCustomizer->resourcesPaths();
 
+        $matches = [];
+
         foreach ($basePaths as $basePath) {
             $searchPaths = [
                 $basePath."/{$normalized}.php",
@@ -28,15 +30,23 @@ class ResourceLocator
             ];
 
             foreach ($searchPaths as $pattern) {
-                $files = File::glob($pattern);
-
-                if (! empty($files)) {
-                    return $files[0];
+                foreach (File::glob($pattern) as $file) {
+                    $matches[$file] = $file;
                 }
             }
         }
 
-        return null;
+        $matches = array_values($matches);
+
+        if ($matches === []) {
+            return null;
+        }
+
+        if ($panel === null && count($matches) > 1) {
+            throw new AmbiguousResourceException($matches);
+        }
+
+        return $matches[0];
     }
 
     public function extractResourceNamespace(string $resourcePath): string

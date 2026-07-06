@@ -39,7 +39,16 @@ class CustomizeResourceCommand extends Command
             return self::FAILURE;
         }
 
-        $resourcePath = $locator->findResourcePath($resourceName, $panel);
+        try {
+            $resourcePath = $locator->findResourcePath($resourceName, $panel);
+        } catch (\Rolland\FilamentResourceCustomizer\Support\AmbiguousResourceException $e) {
+            $this->error("Resource '{$resourceName}' matches multiple panels. Disambiguate with --panel:");
+            foreach ($e->matches as $match) {
+                $this->line("  - {$match}");
+            }
+
+            return self::FAILURE;
+        }
 
         if (! $resourcePath) {
             $panelLabel = $panel ? " in panel '{$panel}'" : '';
