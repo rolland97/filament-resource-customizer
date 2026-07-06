@@ -28,5 +28,8 @@ it('returns the single match without throwing when the name is unique', function
 
     $locator = app(ResourceLocator::class);
 
-    expect($locator->findResourcePath('UserResource'))->toBe($dir.'/UserResource.php');
+    // realpath normalizes directory separators so the assertion holds on Windows too,
+    // where File::glob returns backslash-separated paths.
+    expect(realpath($locator->findResourcePath('UserResource')))
+        ->toBe(realpath($dir.'/UserResource.php'));
 });
