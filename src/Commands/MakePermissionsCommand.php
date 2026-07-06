@@ -24,7 +24,8 @@ class MakePermissionsCommand extends Command
         $panel = $this->option('panel');
 
         if ($panel && ! File::isDirectory($resourceCustomizer->resourcesPathsForPanel($panel)[0])) {
-            $this->error("Panel '{$panel}' not found. Expected resources at: app/Filament/{$panel}/Resources");
+            $expected = $resourceCustomizer->resourcesPathsForPanel($panel)[0];
+            $this->error("Panel '{$panel}' not found. Expected resources at: {$expected}");
 
             return self::FAILURE;
         }

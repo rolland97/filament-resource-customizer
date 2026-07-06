@@ -31,7 +31,7 @@ class ShieldConfigCommand extends Command
             : $resourceCustomizer->resourcesPaths();
 
         if ($panel && ! File::isDirectory($resourcesPaths[0])) {
-            $this->error("Panel '{$panel}' not found. Expected resources at: app/Filament/{$panel}/Resources");
+            $this->error("Panel '{$panel}' not found. Expected resources at: {$resourcesPaths[0]}");
 
             return self::FAILURE;
         }
