@@ -4,6 +4,7 @@ namespace Rolland\FilamentResourceCustomizer\Support;
 
 use Illuminate\Support\Facades\File;
 use SplFileInfo;
+use Rolland\FilamentResourceCustomizer\Support\ResourceName;
 
 class PermissionsClassResolver
 {
@@ -11,7 +12,7 @@ class PermissionsClassResolver
 
     public function resolveForResourceFile(SplFileInfo $resourceFile, string $resourceClass): ?string
     {
-        $baseName = str_replace('Resource', '', class_basename($resourceClass));
+        $baseName = ResourceName::withoutSuffix($resourceClass);
         $permissionsClassName = $baseName.'Permissions';
 
         $currentDir = $resourceFile->getPath();
