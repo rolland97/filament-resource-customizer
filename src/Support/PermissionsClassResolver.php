@@ -4,29 +4,35 @@ namespace Rolland\FilamentResourceCustomizer\Support;
 
 use Illuminate\Support\Facades\File;
 use SplFileInfo;
-use Rolland\FilamentResourceCustomizer\Support\ResourceName;
 
 class PermissionsClassResolver
 {
-    public function __construct(protected ClassNameExtractor $classNameExtractor) {}
+    public function __construct(
+        protected ClassNameExtractor $classNameExtractor,
+        protected PermissionTargetResolver $targetResolver
+    ) {}
 
     public function resolveForResourceFile(SplFileInfo $resourceFile, string $resourceClass): ?string
     {
-        $baseName = ResourceName::withoutSuffix($resourceClass);
-        $permissionsClassName = $baseName.'Permissions';
+        $resourceName = ResourceName::withoutSuffix($resourceClass);
+        $resourceDirectory = $resourceFile->getPath();
+        $resourceNamespace = $this->classNameExtractor->namespaceFromPath($resourceFile->getPathname()) ?? '';
 
-        $currentDir = $resourceFile->getPath();
-        $candidate = $currentDir.'/'.$permissionsClassName.'.php';
+        [, $targetPath] = $this->targetResolver->resolve($resourceDirectory, $resourceNamespace, $resourceName);
 
-        if (File::exists($candidate)) {
-            return $this->classNameExtractor->classFromPath($candidate);
+        if (File::exists($targetPath)) {
+            return $this->classNameExtractor->classFromPath($targetPath);
         }
 
-        $parentDir = dirname($currentDir);
-        $parentCandidate = $parentDir.'/'.$permissionsClassName.'.php';
+        // Backward-compatible fallbacks: same directory, then immediate parent.
+        $permissionsClassName = $resourceName.'Permissions';
 
-        if (File::exists($parentCandidate)) {
-            return $this->classNameExtractor->classFromPath($parentCandidate);
+        foreach ([$resourceDirectory, dirname($resourceDirectory)] as $dir) {
+            $candidate = $dir.'/'.$permissionsClassName.'.php';
+
+            if (File::exists($candidate)) {
+                return $this->classNameExtractor->classFromPath($candidate);
+            }
         }
 
         return null;
