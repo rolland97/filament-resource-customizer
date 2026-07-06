@@ -10,6 +10,7 @@ use Rolland\FilamentResourceCustomizer\Services\Generators\CustomizedFileGenerat
 use Rolland\FilamentResourceCustomizer\Services\Resources\CustomizationStateChecker;
 use Rolland\FilamentResourceCustomizer\Services\Resources\ResourceTableLocator;
 use Rolland\FilamentResourceCustomizer\Services\Table\TableAnalyzer;
+use Rolland\FilamentResourceCustomizer\Support\AmbiguousResourceException;
 use Rolland\FilamentResourceCustomizer\Support\ResourceLocator;
 
 use function Laravel\Prompts\text;
@@ -41,7 +42,7 @@ class CustomizeResourceCommand extends Command
 
         try {
             $resourcePath = $locator->findResourcePath($resourceName, $panel);
-        } catch (\Rolland\FilamentResourceCustomizer\Support\AmbiguousResourceException $e) {
+        } catch (AmbiguousResourceException $e) {
             $this->error("Resource '{$resourceName}' matches multiple panels. Disambiguate with --panel:");
             foreach ($e->matches as $match) {
                 $this->line("  - {$match}");

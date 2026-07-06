@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Rolland\FilamentResourceCustomizer\FilamentResourceCustomizer;
 use Rolland\FilamentResourceCustomizer\Services\Generators\CustomizedFileGenerator;
+use Rolland\FilamentResourceCustomizer\Support\AmbiguousResourceException;
 use Rolland\FilamentResourceCustomizer\Support\ResourceLocator;
 
 use function Laravel\Prompts\text;
@@ -32,7 +33,7 @@ class MakePermissionsCommand extends Command
 
         try {
             $resourcePath = $locator->findResourcePath($resourceName, $panel);
-        } catch (\Rolland\FilamentResourceCustomizer\Support\AmbiguousResourceException $e) {
+        } catch (AmbiguousResourceException $e) {
             $this->error("Resource '{$resourceName}' matches multiple panels. Disambiguate with --panel:");
             foreach ($e->matches as $match) {
                 $this->line("  - {$match}");

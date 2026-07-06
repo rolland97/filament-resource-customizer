@@ -208,7 +208,7 @@ class TableComponentExtractor
             }
         }
 
-        if ($node instanceof Node\Expr\MethodCall) {
+        if ($node instanceof MethodCall) {
             return 'chained_component';
         }
 
