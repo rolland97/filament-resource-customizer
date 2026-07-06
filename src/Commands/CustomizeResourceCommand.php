@@ -33,12 +33,22 @@ class CustomizeResourceCommand extends Command
         $panel = $this->option('panel');
 
         if ($panel && ! File::isDirectory($resourceCustomizer->resourcesPathsForPanel($panel)[0])) {
-            $this->error("Panel '{$panel}' not found. Expected resources at: app/Filament/{$panel}/Resources");
+            $expected = $resourceCustomizer->resourcesPathsForPanel($panel)[0];
+            $this->error("Panel '{$panel}' not found. Expected resources at: {$expected}");
 
             return self::FAILURE;
         }
 
-        $resourcePath = $locator->findResourcePath($resourceName, $panel);
+        try {
+            $resourcePath = $locator->findResourcePath($resourceName, $panel);
+        } catch (\Rolland\FilamentResourceCustomizer\Support\AmbiguousResourceException $e) {
+            $this->error("Resource '{$resourceName}' matches multiple panels. Disambiguate with --panel:");
+            foreach ($e->matches as $match) {
+                $this->line("  - {$match}");
+            }
+
+            return self::FAILURE;
+        }
 
         if (! $resourcePath) {
             $panelLabel = $panel ? " in panel '{$panel}'" : '';
@@ -72,6 +82,13 @@ class CustomizeResourceCommand extends Command
 
         if (empty($components)) {
             $this->error('Failed to analyze table!');
+
+            return self::FAILURE;
+        }
+
+        if ($analyzer->hasTemplatedComponents()) {
+            $this->error('This resource is already customized — its table delegates to generated component classes.');
+            $this->line('Refusing to regenerate (this would overwrite your Column/Filter/Action files). Edit those files directly, or restore the resource to a pristine table to re-run.');
 
             return self::FAILURE;
         }

@@ -3,6 +3,7 @@
 namespace Rolland\FilamentResourceCustomizer\Services\Context;
 
 use Illuminate\Support\Str;
+use Rolland\FilamentResourceCustomizer\Support\ResourceName;
 
 class ResourceContext
 {
@@ -29,9 +30,7 @@ class ResourceContext
 
     protected function extractResourceName(): string
     {
-        $resourceClassName = basename($this->resourcePath, '.php');
-
-        return str_replace('Resource', '', $resourceClassName);
+        return ResourceName::withoutSuffix(basename($this->resourcePath, '.php'));
     }
 
     protected function inferNamespace(string $suffix): string

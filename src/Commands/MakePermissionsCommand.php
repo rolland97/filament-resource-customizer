@@ -24,12 +24,22 @@ class MakePermissionsCommand extends Command
         $panel = $this->option('panel');
 
         if ($panel && ! File::isDirectory($resourceCustomizer->resourcesPathsForPanel($panel)[0])) {
-            $this->error("Panel '{$panel}' not found. Expected resources at: app/Filament/{$panel}/Resources");
+            $expected = $resourceCustomizer->resourcesPathsForPanel($panel)[0];
+            $this->error("Panel '{$panel}' not found. Expected resources at: {$expected}");
 
             return self::FAILURE;
         }
 
-        $resourcePath = $locator->findResourcePath($resourceName, $panel);
+        try {
+            $resourcePath = $locator->findResourcePath($resourceName, $panel);
+        } catch (\Rolland\FilamentResourceCustomizer\Support\AmbiguousResourceException $e) {
+            $this->error("Resource '{$resourceName}' matches multiple panels. Disambiguate with --panel:");
+            foreach ($e->matches as $match) {
+                $this->line("  - {$match}");
+            }
+
+            return self::FAILURE;
+        }
 
         if (! $resourcePath) {
             $panelLabel = $panel ? " in panel '{$panel}'" : '';

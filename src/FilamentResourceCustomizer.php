@@ -49,7 +49,9 @@ class FilamentResourceCustomizer
             return $this->resourcesPaths();
         }
 
-        return [base_path("app/Filament/{$panel}/Resources")];
+        $template = (string) $this->config('panels.path_template', 'app/Filament/{panel}/Resources');
+
+        return [base_path(str_replace('{panel}', $panel, $template))];
     }
 
     public function stubsPath(): string

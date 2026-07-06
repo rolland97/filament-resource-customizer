@@ -162,3 +162,31 @@ PHP);
         ->toContain('VendorResource::class')
         ->not->toContain('OrderResource::class');
 });
+
+it('fails cleanly when the shield config has no manage array', function () {
+    $resourceDir = base_path('app/Filament/Resources/Organisation/Organisations');
+    File::ensureDirectoryExists($resourceDir);
+
+    File::put($resourceDir.'/OrganisationResource.php', <<<'PHP'
+<?php
+
+namespace App\Filament\Resources\Organisation\Organisations;
+
+class OrganisationResource
+{
+}
+PHP);
+
+    $configPath = base_path('filament-shield-test.php');
+
+    File::put($configPath, <<<'PHP'
+<?php
+
+return [
+    'navigation' => true,
+];
+PHP);
+
+    $this->artisan('filament:shield-config', ['--path' => $configPath])
+        ->assertExitCode(1);
+});

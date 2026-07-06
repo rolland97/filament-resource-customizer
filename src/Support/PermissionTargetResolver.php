@@ -26,7 +26,9 @@ class PermissionTargetResolver
                 throw new InvalidArgumentException('Custom permission path is not configured.');
             }
 
-            $targetDirectory = base_path($customPath);
+            $base = base_path($customPath);
+            $panel = $this->panelFromNamespace($resourceNamespace);
+            $targetDirectory = $panel ? $base.'/'.$panel : $base;
         }
 
         if ($configuredNamespace) {
@@ -43,5 +45,19 @@ class PermissionTargetResolver
         }
 
         return Str::beforeLast($namespace, '\\');
+    }
+
+    protected function panelFromNamespace(string $namespace): ?string
+    {
+        $parts = explode('\\', $namespace);
+        $filamentIndex = array_search('Filament', $parts, true);
+
+        if ($filamentIndex === false || ! isset($parts[$filamentIndex + 1])) {
+            return null;
+        }
+
+        $candidate = $parts[$filamentIndex + 1];
+
+        return $candidate === 'Resources' ? null : $candidate;
     }
 }

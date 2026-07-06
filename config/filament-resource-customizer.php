@@ -6,6 +6,7 @@ return [
     'stubs_path' => 'stubs/filament-resource-customizer',
     'panels' => [
         'auto_detect' => true,
+        'path_template' => 'app/Filament/{panel}/Resources',
     ],
     'permissions' => [
         'enabled' => true,
