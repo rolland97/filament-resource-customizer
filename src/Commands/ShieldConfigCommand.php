@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use Rolland\FilamentResourceCustomizer\FilamentResourceCustomizer;
 use Rolland\FilamentResourceCustomizer\Services\Shield\ShieldResourceConfigBuilder;
 use Rolland\FilamentResourceCustomizer\Support\ShieldConfigUpdater;
+use RuntimeException;
 
 class ShieldConfigCommand extends Command
 {
@@ -44,7 +45,15 @@ class ShieldConfigCommand extends Command
         }
 
         $resources = $builder->buildForPaths($resourcesPaths);
-        $updater->updateResources($configPath, $resources, $this->resolveMergeOption());
+
+        try {
+            $updater->updateResources($configPath, $resources, $this->resolveMergeOption());
+        } catch (RuntimeException $e) {
+            $this->error("Failed to update Shield config: {$e->getMessage()}");
+            $this->line('Ensure the config returns an array with a `resources.manage` entry (publish the Filament Shield config first).');
+
+            return self::FAILURE;
+        }
 
         $this->info('Filament Shield config updated.');
 
