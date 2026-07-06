@@ -81,6 +81,53 @@ class TableComponentExtractor
         return $uses;
     }
 
+    public function hasTemplatedComponents(array $ast): bool
+    {
+        $configureMethod = $this->findMethod($ast, 'configure');
+
+        if (! $configureMethod) {
+            return false;
+        }
+
+        foreach (['columns', 'filters', 'recordActions', 'toolbarActions'] as $methodName) {
+            $argument = $this->componentArgument($configureMethod, $methodName);
+
+            if ($argument !== null && ! $argument instanceof Node\Expr\Array_) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function componentArgument(ClassMethod $method, string $methodName): ?Node
+    {
+        foreach ($method->stmts as $stmt) {
+            if ($stmt instanceof Node\Stmt\Return_) {
+                $argument = $this->findMethodCallArgumentNode($stmt->expr, $methodName);
+
+                if ($argument !== null) {
+                    return $argument;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function findMethodCallArgumentNode(?Node $node, string $methodName): ?Node
+    {
+        if (! $node instanceof MethodCall) {
+            return null;
+        }
+
+        if ($node->name instanceof Node\Identifier && $node->name->toString() === $methodName && isset($node->args[0])) {
+            return $node->args[0]->value;
+        }
+
+        return $this->findMethodCallArgumentNode($node->var, $methodName);
+    }
+
     protected function extractConfigureArguments(array $ast, string $methodName): ?array
     {
         $configureMethod = $this->findMethod($ast, 'configure');

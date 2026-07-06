@@ -86,6 +86,13 @@ class CustomizeResourceCommand extends Command
             return self::FAILURE;
         }
 
+        if ($analyzer->hasTemplatedComponents()) {
+            $this->error('This resource is already customized — its table delegates to generated component classes.');
+            $this->line('Refusing to regenerate (this would overwrite your Column/Filter/Action files). Edit those files directly, or restore the resource to a pristine table to re-run.');
+
+            return self::FAILURE;
+        }
+
         $components['resourceNamespace'] = $locator->extractResourceNamespace($resourcePath);
         $components['tableNamespace'] = $components['namespace'] ?? null;
 

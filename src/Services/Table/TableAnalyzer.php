@@ -26,4 +26,9 @@ class TableAnalyzer
             'uses' => $this->componentExtractor->extractUseStatements($this->ast),
         ];
     }
+
+    public function hasTemplatedComponents(): bool
+    {
+        return $this->componentExtractor->hasTemplatedComponents($this->ast);
+    }
 }
