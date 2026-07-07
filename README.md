@@ -201,6 +201,19 @@ If you use Filament Shield, the `filament:shield-config` command will update `re
 - pass `--merge`, or
 - set `shield.merge` to `true` in the config.
 
+**Keeping hand-maintained config across runs.** `filament:shield-config` only rewrites the
+`resources.manage` array — every other section of `config/filament-shield.php` (for example
+`policies.single_parameter_methods`) is left untouched. To keep extra entries inside `manage`:
+
+- run with `--merge` (or set `shield.merge` to `true`) so existing `manage` rows are preserved
+  alongside the generated ones;
+- declare rows that should always be present in `shield.static_resources`
+  (config: `filament-resource-customizer.shield.static_resources`) — these are injected on every
+  run and survive even without `--merge`.
+
+Note: comments written *inside* the `manage` array are not preserved when it is regenerated;
+comments elsewhere in the file are kept.
+
 ### Multi-panel setups
 
 You can use any combination of these:
