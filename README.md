@@ -156,6 +156,23 @@ Key options in `config/filament-resource-customizer.php`:
 - `shield.static_resources`: Always include these resources in `manage`
 - `shield.merge`: Default merge behavior for `filament:shield-config`
 
+### Permission base class
+
+Generated permission classes extend `Rolland\FilamentResourceCustomizer\Support\BaseResourcePermissions`
+by default. To make them extend a shared or custom base instead (for example, a per-app base class
+that other permission classes inherit from), set `permissions.base_class`:
+
+```php
+// config/filament-resource-customizer.php
+'permissions' => [
+    // ...
+    'base_class' => \App\Filament\Permissions\BasePermissions::class,
+],
+```
+
+The configured class must exist; generation fails with a clear error otherwise. The generated file
+imports it automatically (unless it lives in the generated class's own namespace).
+
 ### Filament Shield integration
 
 If you use Filament Shield, the `filament:shield-config` command will update `resources.manage`. By default it replaces entries unless you:
