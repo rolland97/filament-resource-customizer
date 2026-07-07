@@ -27,21 +27,38 @@ class ShieldGateResolver implements PermissionGateResolver
         // ->permissions->separator / ->permissions->case.
         $permissions = Utils::getConfig()['permissions'];
 
-        // NOTE: bezhansalleh/filament-shield 4.2.0's public API has no
-        // panel-prefixing method (Utils::prefixPermissionWithPanel() does not
-        // exist in the installed package - confirmed via source inspection).
-        // defaultPermissionKeyBuilder() is the full extent of the public key
-        // building surface, so the gate key is used as-is.
-        return FilamentShield::defaultPermissionKeyBuilder(
+        $key = FilamentShield::defaultPermissionKeyBuilder(
             affix: $method,
             separator: (string) $permissions['separator'],
             subject: $resource,
             case: (string) $permissions['case'],
         );
+
+        // Panel-prefixing (e.g. "system:ViewPdf:Request") exists only in some
+        // filament-shield versions (dev-main); stable 4.2.0 has no such method.
+        // Apply it when the installed version supports it so panel-prefixed apps
+        // get correct gate strings; otherwise the unprefixed key is already correct.
+        $panelPrefixMethod = $this->panelPrefixMethodName();
+
+        if (method_exists(Utils::class, $panelPrefixMethod)) {
+            $key = (string) call_user_func([Utils::class, $panelPrefixMethod], $key);
+        }
+
+        return $key;
     }
 
     protected function shieldIsAvailable(): bool
     {
         return class_exists(FilamentShield::class) && class_exists(Utils::class);
+    }
+
+    // Isolated behind a method call (rather than a literal string at the
+    // call site) so PHPStan infers a plain `string` return type instead of
+    // a literal-string, and does not attempt to statically verify the
+    // method exists on Utils - which it does not in the installed
+    // filament-shield 4.2.0.
+    protected function panelPrefixMethodName(): string
+    {
+        return 'prefixPermissionWithPanel';
     }
 }

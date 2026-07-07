@@ -9,8 +9,9 @@ it('builds a shield gate string from configured case and separator', function ()
         'filament-shield.permissions.separator' => ':',
     ]);
 
-    // No Filament panel is current under testbench, so prefixPermissionWithPanel
-    // adds no prefix; this asserts the case + separator delegation to Shield.
+    // The installed filament-shield 4.2.0 has no prefixPermissionWithPanel()
+    // method, so ShieldGateResolver::key()'s guarded panel-prefix branch is
+    // skipped and this asserts the unprefixed case + separator delegation to Shield.
     expect((new ShieldGateResolver)->key('viewApprovalTrail', 'Request'))
         ->toBe('ViewApprovalTrail:Request');
 });
