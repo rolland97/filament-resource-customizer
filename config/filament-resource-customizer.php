@@ -13,6 +13,7 @@ return [
         'placement' => 'resource',
         'custom_path' => null,
         'namespace' => null,
+        'base_class' => \Rolland\FilamentResourceCustomizer\Support\BaseResourcePermissions::class,
     ],
     'shield' => [
         'default_methods' => [
