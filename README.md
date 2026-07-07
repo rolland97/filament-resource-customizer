@@ -5,19 +5,20 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/rolland97/filament-resource-customizer/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/rolland97/filament-resource-customizer/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/rolland97/filament-resource-customizer.svg?style=flat-square)](https://packagist.org/packages/rolland97/filament-resource-customizer)
 
-Customize Filament resources with optional Filament Shield permissions scaffolding.
+Split Filament resource tables into dedicated classes, and scaffold Filament Shield permissions — including a runtime permission helper.
 
 ## What it does
 
 - Splits a Filament resource table into dedicated column, filter, and action classes.
 - Generates a permissions class per resource (optional).
 - Builds or updates Filament Shield `resources.manage` entries.
+- Provides a `BaseResourcePermissions` helper whose `can()` / `permissions()` / `permissionKey()` produce Filament Shield gate strings at runtime.
 
 ## Requirements
 
-- PHP 8.3, 8.4, or 8.5
-- Laravel 11 or 12
-- Filament v4 or v5
+- PHP 8.3, 8.4, or 8.5, and Laravel 11 or 12 (this package's dependencies).
+- Filament v4 or v5 — your application's dependency, not a hard composer dependency of this package.
+- Filament Shield (`bezhansalleh/filament-shield`) — **optional**; required only for the permission helper (`BaseResourcePermissions::can()`/`permissions()`/`permissionKey()`) and the `filament:shield-config` command.
 
 This package generates and rewrites Filament resource files as source code; it does not load
 Filament at runtime, so no `filament/*` package is a hard dependency. Generated output targets
@@ -52,8 +53,10 @@ Shield's default key builder.
 ## Installation
 
 ```bash
-composer require rolland97/filament-resource-customizer --dev
+composer require rolland97/filament-resource-customizer
 ```
+
+Install as a normal (non-dev) dependency: the package ships `BaseResourcePermissions`, which generated permission classes extend and call at runtime from your policies. Installing with `--dev` is acceptable only if you use the code-generation commands alone and never use the generated permission classes or helper at runtime.
 
 Publish the config:
 
