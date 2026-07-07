@@ -2,6 +2,25 @@
 
 All notable changes to `filament-resource-customizer` will be documented in this file.
 
+## v2.0.0 - 2026-07-07
+
+Phase 2: the shield-aware permission layer — permission helpers that produce real Filament Shield gate strings, a configurable and populated permission-class generator, and verified shield-config round-tripping.
+
+### Changed (breaking)
+
+- `BaseResourcePermissions::can()`, `permissions()`, and `permissionKey()` now build gate strings by delegating to Filament Shield's own key builder, so they match the permissions Shield actually registered (panel prefix + case) instead of the old non-functional `"{method}:{Resource}"` form. `permissions()`'s return value changes accordingly, and these three methods now require `bezhansalleh/filament-shield` to be installed (they throw a clear `RuntimeException` otherwise). Apps that hardcoded gate strings can migrate to `YourPermissions::can('method')`. See the Upgrading section in the README.
+- Generated permission classes are now populated from `shield.default_methods` (SCREAMING_SNAKE consts + a `methods()` returning them) instead of an empty stub. Set `shield.default_methods` to `[]` for the previous empty shape. Only affects newly generated / regenerated files.
+
+### Added
+
+- `permissions.base_class` config — generated permission classes can extend a shared or custom base class instead of the built-in `BaseResourcePermissions` (imported automatically unless it lives in the generated namespace).
+- `RequestPermissions::permissionKey('method')` — the full gate string for a permission, matching Shield, without hardcoding the format.
+- Documentation of how `filament:shield-config` preserves hand-maintained config: everything outside `resources.manage` is left untouched; `--merge` / `shield.merge` keeps hand-added rows; `shield.static_resources` injects rows on every run.
+
+### Internal
+
+- Shield coupling isolated behind a `PermissionGateResolver` seam (`ShieldGateResolver`), keeping `filament-shield` a dev-only dependency and the helpers testable without it. Panel prefixing is applied only on Shield versions that expose it.
+
 ## v1.2.0 - 2026-07-06
 
 Hardening release: correctness fixes, PHP 8.5, documented Filament v4/v5 support.
