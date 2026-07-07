@@ -16,7 +16,7 @@ Split Filament resource tables into dedicated classes, and scaffold Filament Shi
 
 ## Requirements
 
-- PHP 8.3, 8.4, or 8.5, and Laravel 11 or 12 (this package's dependencies).
+- PHP 8.3, 8.4, or 8.5, and Laravel 11, 12, or 13 (this package's dependencies).
 - Filament v4 or v5 — your application's dependency, not a hard composer dependency of this package.
 - Filament Shield (`bezhansalleh/filament-shield`) — **optional**; required only for the permission helper (`BaseResourcePermissions::can()`/`permissions()`/`permissionKey()`) and the `filament:shield-config` command.
 
