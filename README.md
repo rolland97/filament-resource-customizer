@@ -173,6 +173,27 @@ that other permission classes inherit from), set `permissions.base_class`:
 The configured class must exist; generation fails with a clear error otherwise. The generated file
 imports it automatically (unless it lives in the generated class's own namespace).
 
+### Generated permission methods
+
+Generated permission classes are populated from `shield.default_methods`: each method becomes a
+`SCREAMING_SNAKE` constant, and `methods()` returns those constants.
+
+```php
+class UserPermissions extends BaseResourcePermissions
+{
+    public const VIEW_ANY = 'viewAny';
+    // ... view, create, update, delete
+
+    public static function methods(): array
+    {
+        return [self::VIEW_ANY /* , ... */];
+    }
+}
+```
+
+Add your resource-specific permissions (e.g. `viewApprovalTrail`) as extra constants and append them
+to `methods()`. Set `shield.default_methods` to `[]` to generate an empty `methods()`.
+
 ### Filament Shield integration
 
 If you use Filament Shield, the `filament:shield-config` command will update `resources.manage`. By default it replaces entries unless you:
