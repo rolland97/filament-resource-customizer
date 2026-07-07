@@ -2,6 +2,7 @@
 
 use Rolland\FilamentResourceCustomizer\Services\Context\ResourceContext;
 use Rolland\FilamentResourceCustomizer\Services\Rendering\Renderers\PermissionClassRenderer;
+use Rolland\FilamentResourceCustomizer\Support\ResourceName;
 
 function renderPermissionClass(string $resourceNamespace = 'App\\Filament\\Resources\\Users'): string
 {
@@ -22,7 +23,7 @@ it('extends the default BaseResourcePermissions with its import when no base_cla
 });
 
 it('extends a configured base class in a different namespace with a use import', function () {
-    config(['filament-resource-customizer.permissions.base_class' => \Rolland\FilamentResourceCustomizer\Support\ResourceName::class]);
+    config(['filament-resource-customizer.permissions.base_class' => ResourceName::class]);
 
     $contents = renderPermissionClass();
 
@@ -33,7 +34,7 @@ it('extends a configured base class in a different namespace with a use import',
 
 it('omits the use import when the configured base class is in the generated namespace', function () {
     // Generated class namespace == base class namespace => no redundant import.
-    config(['filament-resource-customizer.permissions.base_class' => \Rolland\FilamentResourceCustomizer\Support\ResourceName::class]);
+    config(['filament-resource-customizer.permissions.base_class' => ResourceName::class]);
 
     $contents = renderPermissionClass('Rolland\\FilamentResourceCustomizer\\Support');
 
@@ -50,7 +51,7 @@ it('throws when the configured base class does not exist', function () {
 });
 
 it('emits a use import for a global-namespace configured base class', function () {
-    config(['filament-resource-customizer.permissions.base_class' => \ArrayObject::class]);
+    config(['filament-resource-customizer.permissions.base_class' => ArrayObject::class]);
 
     $contents = renderPermissionClass();
 
