@@ -133,7 +133,7 @@ Run all steps for a specific panel:
 php artisan filament:customize-resource-all DepartmentResource --panel=Admin
 ```
 
-If `resources`, `resources.manage`, `resources.subject`, or `resources.exclude` are missing, the command will create them.
+The target config must already contain a `resources.manage` array — the command updates it in place and fails with a clear message if it is absent (publish the Filament Shield config first). Everything outside `resources.manage` is left untouched.
 
 ## Commands
 
