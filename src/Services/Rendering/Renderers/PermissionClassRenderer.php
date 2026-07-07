@@ -26,6 +26,7 @@ class PermissionClassRenderer
         );
 
         $base = $this->baseClassVariables($namespace);
+        $methodVars = $this->permissionMethodVariables();
 
         $contents = $this->stubRenderer->render('permission', [
             'namespace' => $namespace,
@@ -33,6 +34,8 @@ class PermissionClassRenderer
             'resourceName' => $context->resourceName,
             'baseClassImport' => $base['import'],
             'baseClassShort' => $base['short'],
+            'permissionConsts' => $methodVars['consts'],
+            'permissionMethods' => $methodVars['methods'],
         ]);
 
         return new RenderedFile($filePath, $contents);
@@ -73,6 +76,38 @@ class PermissionClassRenderer
         return [
             'import' => $needsImport ? "use {$baseClass};\n\n" : '',
             'short' => $short,
+        ];
+    }
+
+    /**
+     * @return array{consts: string, methods: string}
+     */
+    protected function permissionMethodVariables(): array
+    {
+        /** @var array<int, mixed> $configured */
+        $configured = (array) config('filament-resource-customizer.shield.default_methods', []);
+
+        $methods = array_values(array_filter(
+            $configured,
+            static fn ($method): bool => is_string($method) && $method !== ''
+        ));
+
+        if ($methods === []) {
+            return ['consts' => '', 'methods' => ''];
+        }
+
+        $consts = '';
+        $refs = [];
+
+        foreach ($methods as $method) {
+            $constName = Str::of($method)->snake()->upper()->toString();
+            $consts .= "    public const {$constName} = '{$method}';\n\n";
+            $refs[] = "            self::{$constName},";
+        }
+
+        return [
+            'consts' => $consts,
+            'methods' => "\n".implode("\n", $refs)."\n        ",
         ];
     }
 }

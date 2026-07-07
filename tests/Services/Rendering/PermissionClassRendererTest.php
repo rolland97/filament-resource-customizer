@@ -72,6 +72,16 @@ use Rolland\FilamentResourceCustomizer\Support\BaseResourcePermissions;
 
 class UserPermissions extends BaseResourcePermissions
 {
+    public const VIEW_ANY = 'viewAny';
+
+    public const VIEW = 'view';
+
+    public const CREATE = 'create';
+
+    public const UPDATE = 'update';
+
+    public const DELETE = 'delete';
+
     public static function getResourceName(): string
     {
         return 'User';
@@ -80,10 +90,14 @@ class UserPermissions extends BaseResourcePermissions
     public static function methods(): array
     {
         return [
+            self::VIEW_ANY,
+            self::VIEW,
+            self::CREATE,
+            self::UPDATE,
+            self::DELETE,
         ];
     }
 }
-
 PHP;
 
     // Normalize line endings (the stub checks out as CRLF on Windows) and rtrim to avoid
@@ -91,4 +105,45 @@ PHP;
     $normalize = fn (string $value): string => rtrim(str_replace("\r\n", "\n", $value));
 
     expect($normalize($contents))->toBe($normalize($expected));
+});
+
+it('generates consts and a populated methods() from shield.default_methods', function () {
+    $contents = renderPermissionClass();
+
+    expect($contents)
+        ->toContain("public const VIEW_ANY = 'viewAny';")
+        ->toContain("public const DELETE = 'delete';")
+        ->toContain('self::VIEW_ANY,')
+        ->toContain('self::DELETE,');
+});
+
+it('generates no consts and an empty methods() when default_methods is empty', function () {
+    config(['filament-resource-customizer.shield.default_methods' => []]);
+
+    $contents = renderPermissionClass();
+
+    expect($contents)
+        ->not->toContain('public const')
+        ->toContain('return [];');
+});
+
+it('honors a custom default_methods set with correct const names', function () {
+    config(['filament-resource-customizer.shield.default_methods' => ['viewAny', 'publish']]);
+
+    $contents = renderPermissionClass();
+
+    expect($contents)
+        ->toContain("public const VIEW_ANY = 'viewAny';")
+        ->toContain("public const PUBLISH = 'publish';")
+        ->toContain('self::VIEW_ANY,')
+        ->toContain('self::PUBLISH,')
+        ->not->toContain("public const VIEW = 'view';");
+});
+
+it('generates syntactically valid PHP', function () {
+    $contents = renderPermissionClass();
+
+    $parser = (new \PhpParser\ParserFactory)->createForHostVersion();
+    expect(fn () => $parser->parse($contents))->not->toThrow(Throwable::class);
+    expect($parser->parse($contents))->not->toBeNull();
 });

@@ -4,14 +4,13 @@ namespace {{ namespace }};
 
 {{ baseClassImport }}class {{ className }} extends {{ baseClassShort }}
 {
-    public static function getResourceName(): string
+{{ permissionConsts }}    public static function getResourceName(): string
     {
         return '{{ resourceName }}';
     }
 
     public static function methods(): array
     {
-        return [
-        ];
+        return [{{ permissionMethods }}];
     }
 }
