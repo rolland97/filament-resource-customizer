@@ -24,6 +24,31 @@ Filament at runtime, so no `filament/*` package is a hard dependency. Generated 
 APIs common to Filament v4 and v5. Full application-level compatibility across both majors is
 verified manually per release (a CI matrix booting generated resources under each major is planned).
 
+### Permission helper (`BaseResourcePermissions`)
+
+`BaseResourcePermissions::can()`, `permissions()`, and `permissionKey()` build authorization
+gate strings by delegating to Filament Shield, so they require
+[`bezhansalleh/filament-shield`](https://github.com/bezhanSalleh/filament-shield) to be installed.
+Called without it, they throw a `RuntimeException`. The rest of the package (table customization,
+file generation) does not require Shield.
+
+```php
+// Full gate string, matching what Shield registered (incl. panel prefix + case):
+RequestPermissions::permissionKey('viewApprovalTrail'); // "system:ViewApprovalTrail:Request"
+
+// Authorization check for the current user:
+RequestPermissions::can('viewApprovalTrail');           // bool
+
+// All gate strings for the class's methods():
+RequestPermissions::permissions();                      // ["system:ViewApprovalTrail:Request", ...]
+```
+
+The panel prefix (`system:` above) is only added on Filament Shield versions that expose panel
+prefixing; on versions without it the helpers return the unprefixed key (e.g.
+`ViewApprovalTrail:Request`). Either way the result matches what Shield itself registered. A custom
+`FilamentShield::buildPermissionKeyUsing()` closure is not honored by these helpers; they use
+Shield's default key builder.
+
 ## Installation
 
 ```bash
@@ -134,12 +159,63 @@ Key options in `config/filament-resource-customizer.php`:
 - `shield.static_resources`: Always include these resources in `manage`
 - `shield.merge`: Default merge behavior for `filament:shield-config`
 
+### Permission base class
+
+Generated permission classes extend `Rolland\FilamentResourceCustomizer\Support\BaseResourcePermissions`
+by default. To make them extend a shared or custom base instead (for example, a per-app base class
+that other permission classes inherit from), set `permissions.base_class`:
+
+```php
+// config/filament-resource-customizer.php
+'permissions' => [
+    // ...
+    'base_class' => \App\Filament\Permissions\BasePermissions::class,
+],
+```
+
+The configured class must exist; generation fails with a clear error otherwise. The generated file
+imports it automatically (unless it lives in the generated class's own namespace).
+
+### Generated permission methods
+
+Generated permission classes are populated from `shield.default_methods`: each method becomes a
+`SCREAMING_SNAKE` constant, and `methods()` returns those constants.
+
+```php
+class UserPermissions extends BaseResourcePermissions
+{
+    public const VIEW_ANY = 'viewAny';
+    // ... view, create, update, delete
+
+    public static function methods(): array
+    {
+        return [self::VIEW_ANY /* , ... */];
+    }
+}
+```
+
+Add your resource-specific permissions (e.g. `viewApprovalTrail`) as extra constants and append them
+to `methods()`. Set `shield.default_methods` to `[]` to generate an empty `methods()`.
+
 ### Filament Shield integration
 
 If you use Filament Shield, the `filament:shield-config` command will update `resources.manage`. By default it replaces entries unless you:
 
 - pass `--merge`, or
 - set `shield.merge` to `true` in the config.
+
+**Keeping hand-maintained config across runs.** `filament:shield-config` only rewrites the
+`resources.manage` array — every other section of `config/filament-shield.php` (for example
+`policies.single_parameter_methods`) is left untouched. To keep extra entries inside `manage`:
+
+- run with `--merge` (or set `shield.merge` to `true`) so existing `manage` rows are preserved
+  alongside the generated ones;
+- declare rows that should always be present in `shield.static_resources`
+  (config: `filament-resource-customizer.shield.static_resources`) — these are injected on every
+  run and survive even without `--merge`.
+
+Note: comments written *inside* the `manage` array are not preserved when it is regenerated;
+comments elsewhere in the file are kept.
 
 ### Multi-panel setups
 
@@ -174,6 +250,16 @@ composer test
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information.
+
+## Upgrading
+
+### To the shield-aware permission helper
+
+`BaseResourcePermissions::permissions()` now returns full Shield gate strings (e.g.
+`system:ViewApprovalTrail:Request`) instead of the previous `method:Resource` form, and `can()`
+now returns correct results in panel-prefixed apps. If you hardcoded gate strings in your policies,
+you can replace them with `YourPermissions::can('method')`. These methods now require
+`bezhansalleh/filament-shield`.
 
 ## License
 

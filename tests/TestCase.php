@@ -2,6 +2,7 @@
 
 namespace Rolland\FilamentResourceCustomizer\Tests;
 
+use BezhanSalleh\FilamentShield\FilamentShieldServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Rolland\FilamentResourceCustomizer\FilamentResourceCustomizerServiceProvider;
@@ -19,9 +20,15 @@ class TestCase extends Orchestra
 
     protected function getPackageProviders($app)
     {
-        return [
+        $providers = [
             FilamentResourceCustomizerServiceProvider::class,
         ];
+
+        if (class_exists(FilamentShieldServiceProvider::class)) {
+            $providers[] = FilamentShieldServiceProvider::class;
+        }
+
+        return $providers;
     }
 
     public function getEnvironmentSetUp($app)

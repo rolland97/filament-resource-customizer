@@ -1,5 +1,7 @@
 <?php
 
+use Rolland\FilamentResourceCustomizer\Support\BaseResourcePermissions;
+
 // config for Rolland/FilamentResourceCustomizer
 return [
     'resources_path' => 'app/Filament/Resources', // string or array of paths
@@ -13,6 +15,7 @@ return [
         'placement' => 'resource',
         'custom_path' => null,
         'namespace' => null,
+        'base_class' => BaseResourcePermissions::class,
     ],
     'shield' => [
         'default_methods' => [

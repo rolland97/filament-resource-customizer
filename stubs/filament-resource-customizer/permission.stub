@@ -2,18 +2,15 @@
 
 namespace {{ namespace }};
 
-use Rolland\FilamentResourceCustomizer\Support\BaseResourcePermissions;
-
-class {{ className }} extends BaseResourcePermissions
+{{ baseClassImport }}class {{ className }} extends {{ baseClassShort }}
 {
-    public static function getResourceName(): string
+{{ permissionConsts }}    public static function getResourceName(): string
     {
         return '{{ resourceName }}';
     }
 
     public static function methods(): array
     {
-        return [
-        ];
+        return [{{ permissionMethods }}];
     }
 }
