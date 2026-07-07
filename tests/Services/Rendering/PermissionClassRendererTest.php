@@ -86,6 +86,9 @@ class UserPermissions extends BaseResourcePermissions
 
 PHP;
 
-    // rtrim on both sides to avoid asserting on a fiction-prone trailing newline count.
-    expect(rtrim($contents))->toBe(rtrim($expected));
+    // Normalize line endings (the stub checks out as CRLF on Windows) and rtrim to avoid
+    // asserting on a fiction-prone trailing newline count.
+    $normalize = fn (string $value): string => rtrim(str_replace("\r\n", "\n", $value));
+
+    expect($normalize($contents))->toBe($normalize($expected));
 });
