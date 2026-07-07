@@ -1,5 +1,6 @@
 <?php
 
+use PhpParser\ParserFactory;
 use Rolland\FilamentResourceCustomizer\Services\Context\ResourceContext;
 use Rolland\FilamentResourceCustomizer\Services\Rendering\Renderers\PermissionClassRenderer;
 use Rolland\FilamentResourceCustomizer\Support\ResourceName;
@@ -143,7 +144,7 @@ it('honors a custom default_methods set with correct const names', function () {
 it('generates syntactically valid PHP', function () {
     $contents = renderPermissionClass();
 
-    $parser = (new \PhpParser\ParserFactory)->createForHostVersion();
+    $parser = (new ParserFactory)->createForHostVersion();
     expect(fn () => $parser->parse($contents))->not->toThrow(Throwable::class);
     expect($parser->parse($contents))->not->toBeNull();
 });
