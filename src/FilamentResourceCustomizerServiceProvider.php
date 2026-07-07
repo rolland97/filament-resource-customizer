@@ -7,6 +7,8 @@ use Rolland\FilamentResourceCustomizer\Commands\CustomizeResourceAllCommand;
 use Rolland\FilamentResourceCustomizer\Commands\CustomizeResourceCommand;
 use Rolland\FilamentResourceCustomizer\Commands\MakePermissionsCommand;
 use Rolland\FilamentResourceCustomizer\Commands\ShieldConfigCommand;
+use Rolland\FilamentResourceCustomizer\Contracts\PermissionGateResolver;
+use Rolland\FilamentResourceCustomizer\Shield\ShieldGateResolver;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -30,6 +32,7 @@ class FilamentResourceCustomizerServiceProvider extends PackageServiceProvider
         parent::packageRegistered();
 
         $this->app->singleton('filament-resource-customizer', fn () => new FilamentResourceCustomizer);
+        $this->app->bind(PermissionGateResolver::class, ShieldGateResolver::class);
     }
 
     public function packageBooted(): void
