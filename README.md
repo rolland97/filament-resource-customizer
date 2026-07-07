@@ -144,6 +144,15 @@ The target config must already contain a `resources.manage` array — the comman
 | `filament:shield-config` | Update Filament Shield `resources.manage` |
 | `filament:customize-resource-all` | Run customize + permissions + Shield config |
 
+### Options
+
+| Option | Commands | Effect |
+| --- | --- | --- |
+| `--panel=Name` | all | Target a single panel (resolved from `panels.path_template`, default `app/Filament/Name/Resources`). |
+| `--force` | `customize-resource`, `make-resource-permissions`, `customize-resource-all` | Overwrite existing generated files. A resource whose table is already customized (it delegates to generated component classes) is still refused — restore its original inline table to re-run. |
+| `--merge` / `--no-merge` | `shield-config`, `customize-resource-all` | Merge with, or replace, existing `resources.manage` rows. Defaults to the `shield.merge` config value. |
+| `--path=` | `shield-config`, `customize-resource-all` | Path to the Filament Shield config to update (default `config/filament-shield.php`). |
+
 ## Configuration
 
 Key options in `config/filament-resource-customizer.php`:
