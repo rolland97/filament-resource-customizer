@@ -2,6 +2,14 @@
 
 All notable changes to `filament-resource-customizer` will be documented in this file.
 
+## v2.1.1 - 2026-07-07
+
+CI: cover PHP 8.5.
+
+### Changed
+
+- The test matrix now runs against PHP 8.5 (alongside 8.3 and 8.4) across Laravel 12 and 13 on Linux and Windows, so PHP 8.5 support — already declared in `composer.json` — is verified in CI. No library code changes.
+
 ## v2.1.0 - 2026-07-07
 
 Add Laravel 13 support.
