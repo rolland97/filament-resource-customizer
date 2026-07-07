@@ -2,6 +2,14 @@
 
 All notable changes to `filament-resource-customizer` will be documented in this file.
 
+## v2.1.0 - 2026-07-07
+
+Add Laravel 13 support.
+
+### Added
+
+- Laravel 13 is now supported: `illuminate/contracts` accepts `^11.0 || ^12.0 || ^13.0`. The test suite runs against Laravel 13 (with `orchestra/testbench` 11.x) across PHP 8.3 and 8.4 on both Linux and Windows in CI, alongside the existing Laravel 12 lane.
+
 ## v2.0.0 - 2026-07-07
 
 Phase 2: the shield-aware permission layer — permission helpers that produce real Filament Shield gate strings, a configurable and populated permission-class generator, and verified shield-config round-tripping.
