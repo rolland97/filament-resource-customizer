@@ -48,3 +48,43 @@ it('throws when the configured base class does not exist', function () {
     expect(fn () => renderPermissionClass())
         ->toThrow(InvalidArgumentException::class, 'permissions.base_class');
 });
+
+it('emits a use import for a global-namespace configured base class', function () {
+    config(['filament-resource-customizer.permissions.base_class' => \ArrayObject::class]);
+
+    $contents = renderPermissionClass();
+
+    expect($contents)
+        ->toContain('use ArrayObject;')
+        ->toContain('class UserPermissions extends ArrayObject');
+});
+
+it('renders the exact default permission class contents byte-for-byte', function () {
+    $contents = renderPermissionClass();
+
+    $expected = <<<'PHP'
+<?php
+
+namespace App\Filament\Resources\Users;
+
+use Rolland\FilamentResourceCustomizer\Support\BaseResourcePermissions;
+
+class UserPermissions extends BaseResourcePermissions
+{
+    public static function getResourceName(): string
+    {
+        return 'User';
+    }
+
+    public static function methods(): array
+    {
+        return [
+        ];
+    }
+}
+
+PHP;
+
+    // rtrim on both sides to avoid asserting on a fiction-prone trailing newline count.
+    expect(rtrim($contents))->toBe(rtrim($expected));
+});

@@ -68,7 +68,7 @@ class PermissionClassRenderer
         $short = class_basename($baseClass);
         $baseNamespace = str_contains($baseClass, '\\') ? Str::beforeLast($baseClass, '\\') : '';
 
-        $needsImport = $baseNamespace !== '' && $baseNamespace !== ltrim($generatedNamespace, '\\');
+        $needsImport = $baseNamespace !== ltrim($generatedNamespace, '\\');
 
         return [
             'import' => $needsImport ? "use {$baseClass};\n\n" : '',
