@@ -43,8 +43,11 @@ RequestPermissions::can('viewApprovalTrail');           // bool
 RequestPermissions::permissions();                      // ["system:ViewApprovalTrail:Request", ...]
 ```
 
-A custom `FilamentShield::buildPermissionKeyUsing()` closure is not honored by these helpers; they
-use Shield's default key builder.
+The panel prefix (`system:` above) is only added on Filament Shield versions that expose panel
+prefixing; on versions without it the helpers return the unprefixed key (e.g.
+`ViewApprovalTrail:Request`). Either way the result matches what Shield itself registered. A custom
+`FilamentShield::buildPermissionKeyUsing()` closure is not honored by these helpers; they use
+Shield's default key builder.
 
 ## Installation
 
