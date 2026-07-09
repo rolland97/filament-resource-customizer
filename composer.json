@@ -27,7 +27,7 @@
         "laravel/pint": "^1.14",
         "larastan/larastan": "^3.0",
         "bezhansalleh/filament-shield": "*",
-        "orchestra/testbench": "^10.5.0",
+        "orchestra/testbench": "^11.1.0",
         "pestphp/pest": "^4.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-deprecation-rules": "^2.0"
